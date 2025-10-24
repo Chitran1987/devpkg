@@ -1,0 +1,27 @@
+# fpm & build artifacts
+build/
+.fpm/
+
+# Compiled stuff
+*.o
+*.obj
+*.mod
+*.smod
+*.out
+*.exe
+*.a
+*.so
+*.dll
+*.dylib
+*.lst
+*.map
+
+# Editor/OS junk
+.vscode/
+.idea/
+.DS_Store
+*~
+*.swp
+
+# Local scratch
+octave-workspace
