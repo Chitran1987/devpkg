@@ -1,19 +1,35 @@
-name = "trialpkg"
+name = "devpkg"
 version = "0.1.0"
 license = "license"
 author = "Chitran1987"
 maintainer = "ghosal.chitran@gmail.com"
 copyright = "Copyright 2025, Chitran1987"
+
 [build]
-auto-executables = true
-auto-tests = true
-auto-examples = true
-module-naming = false
+auto-executables = true      # build every app/*.f90 that contains "program ..."
+auto-tests       = true
+auto-examples    = false
+module-naming    = false
+link = ["fftw3f", "m"]       # FFTW (single) + libm; no include-dir needed
+
 [install]
 library = false
 test = false
-[fortran]
-implicit-typing = false
-implicit-external = false
-source-form = "free"
 
+[fortran]
+implicit-typing   = false
+implicit-external = false
+source-form       = "free"
+
+# ------- fpm compiler flag profiles -------
+# Base flags for gfortran on Linux (applies to all profiles unless overridden)
+[profiles.gfortran.linux]
+flags = "-std=f2023 -Wall"
+
+# Debug profile
+[profiles.debug.gfortran.linux]
+flags = "-std=f2023 -g -O0 -fcheck=all -fbacktrace -Wall"
+
+# Release profile
+[profiles.release.gfortran.linux]
+flags = "-std=f2023 -O3 -march=native -ffast-math -Wall"
