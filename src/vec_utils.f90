@@ -25,7 +25,7 @@ module vec_utils
     end interface lineval
 contains
 
-    !function produces a sequence
+    !function produces a sequence with start, stop and length 
     function seq(st, en, len)
         real(real64), intent(in) :: st, en
         integer, intent(in) :: len
