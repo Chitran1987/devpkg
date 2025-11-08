@@ -1,0 +1,5 @@
+Whenever you get a seg fault using "fpm test" on your package directory for testing. Please use this to check for the source of the fault.
+
+fpm clean
+fpm test --profile debug \
+  --flag "-O0 -g -fbacktrace -fcheck=all -Wall -Wextra -Wimplicit-interface -Warray-temporaries -finit-real=snan -finit-integer=-999999 -ffpe-trap=invalid,zero,overflow"

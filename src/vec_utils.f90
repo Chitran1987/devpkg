@@ -6,6 +6,9 @@ module vec_utils
     private :: print_mat_bool, print_mat_int, print_mat_real, print_mat_cmplx
     private :: lineval_r
 
+    !Define the constants------------------------------------------------------
+    real(real64) :: pi = 4.0_real64*atan(1.0_real64)
+    !End definition of constants-----------------------------------------------
     ! The rev(X) interface
     !!! call rev(X)  ---- reverses a vector whether real, int, cmplx
     interface rev
@@ -190,10 +193,34 @@ contains
         end select
     end subroutine lineval_r
 
-    pure elemental real(real64) function gauss_1D(x, A, x0, sig) result(y)
-        real(real64), intent(in) :: x, A, x0, sig
+    pure elemental real(real64) function gauss_1D_core(x, A, x0, sig) result(y)
+        real(real64), intent(in) :: x
+        real(real64), intent(in) :: A, x0, sig
         y = A*exp((-1.0_real64*(x-x0)**2.0_real64/(2.0_real64*sig**2.0_real64)))
+    end function gauss_1D_core
+
+    function gauss_1D(x, A, x0, sig) result(y)
+        real(real64), intent(in) :: x(:)
+        real(real64), optional :: A, x0, sig
+        real(real64) :: A_alt, x0_alt, sig_alt
+        real(real64) :: y(size(x))
+        if ( .not. present(x0) ) then
+            x0_alt = 0.0_real64
+        else
+            x0_alt = x0
+        end if
+        if ( .not. present(sig) ) then
+            sig_alt = 1.0_real64
+        else
+            sig_alt = sig
+        end if
+        if ( .not. present(A) ) then
+            A_alt = 1.0_real64/(sqrt(2*pi)*sig_alt)
+        else
+            A_alt = A
+        end if
+        y = gauss_1D_core(x, A_alt, x0_alt, sig_alt)
     end function gauss_1D
 
-    
+
 end module vec_utils

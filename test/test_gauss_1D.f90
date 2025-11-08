@@ -6,6 +6,6 @@ program test_gauss_1D
   implicit none
   real(real64), allocatable :: X(:), Y(:)
   X = seq(st=-10.0_real64, en=10.0_real64, len=10**3)
-  Y = gauss_1D(x=X, A=1.0_real64, x0=1.5_real64, sig=1.5_real64)
+  Y = gauss_1D(x=X)
   call plot_gnu(X, Y)
 end program test_gauss_1D
