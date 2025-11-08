@@ -222,5 +222,60 @@ contains
         y = gauss_1D_core(x, A_alt, x0_alt, sig_alt)
     end function gauss_1D
 
+    function gauss_2D_nocorr(X, Y, Ax, Ay, x0, y0, sig_x, sig_y) result(tens)
+        real(real64), intent(in) :: X(:), Y(:) !The main inputs
+        real(real64), optional :: Ax, Ay, x0, y0, sig_x, sig_y !The optional inputs
+        real(real64) :: tens(size(Y), size(X), 3) !The output
+        real(real64) :: Xsp(size(Y), size(X)), Ysp(size(Y), size(X)), Gsp(size(Y), size(X)) !The dummys for each tensor position tens(:,:,1), tens(:,:,2) and tens(:,:,3)
+        real(real64) :: Gx(size(X)), Gy(size(Y)), Gx_sp(size(Y), size(X)), Gy_sp(size(Y), size(X)) !The dummys for Gx*Gy at each position 
+        real(real64) :: Ax_alt, Ay_alt, x0_alt, y0_alt, sig_x_alt, sig_y_alt
+        !Error handling for Ax, Ay, x0, y0, sig_x, sig_y
+        if ( .not. present(x0) ) then
+            x0_alt = 0.0_real64
+        else
+            x0_alt = x0
+        end if
+        if ( .not. present(sig_x) ) then
+            sig_x_alt = 1.0_real64
+        else
+            sig_x_alt = sig_x
+        end if
+        if ( .not. present(Ax) ) then
+            Ax_alt = 1.0_real64/(sqrt(2*pi)*sig_x_alt)
+        else
+            Ax_alt = Ax
+        end if
+        if ( .not. present(y0) ) then
+            y0_alt = 0.0_real64
+        else
+            y0_alt = y0
+        end if
+        if ( .not. present(sig_y) ) then
+            sig_y_alt = 1.0_real64
+        else
+            sig_y_alt = sig_y
+        end if
+        if ( .not. present(Ay) ) then
+            Ay_alt = 1.0_real64/(sqrt(2*pi)*sig_y_alt)
+        else
+            Ay_alt = Ay
+        end if
+        !
+        !The core algorithm
+        !First assume that everything is present
+        Gx = gauss_1D_core(X, Ax_alt, x0_alt, sig_x_alt)
+        Gy = gauss_1D_core(Y, Ay_alt, y0_alt, sig_y_alt)
+        call rev(Gy) !Gy needs to be reversed
+        Gx_sp = spread(Gx, dim=1, ncopies=size(Y))
+        Gy_sp = spread(Gy, dim=2, ncopies=size(X))
+        Gsp = Gx_sp*Gy_sp
+        Xsp = spread(X, dim = 1, ncopies=size(Y))
+        call rev(Y) !Y needs to be reversed for plotting as an X-Y plane
+        Ysp = spread(Y, dim = 2, ncopies=size(X))
+        tens(:,:,1) = Gsp
+        tens(:,:,2) = Xsp
+        tens(:,:,3) = Ysp
+
+    end function gauss_2D_nocorr
 
 end module vec_utils
