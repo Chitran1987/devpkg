@@ -190,5 +190,10 @@ contains
         end select
     end subroutine lineval_r
 
+    pure elemental real(real64) function gauss_1D(x, A, x0, sig) result(y)
+        real(real64), intent(in) :: x, A, x0, sig
+        y = A*exp((-1.0_real64*(x-x0)**2.0_real64/(2.0_real64*sig**2.0_real64)))
+    end function gauss_1D
 
+    
 end module vec_utils
