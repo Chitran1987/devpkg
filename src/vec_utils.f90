@@ -228,7 +228,7 @@ contains
         real(real64) :: tens(size(Y), size(X), 3) !The output
         real(real64) :: Xsp(size(Y), size(X)), Ysp(size(Y), size(X)), Gsp(size(Y), size(X)) !The dummys for each tensor position tens(:,:,1), tens(:,:,2) and tens(:,:,3)
         real(real64) :: Gx(size(X)), Gy(size(Y)), Gx_sp(size(Y), size(X)), Gy_sp(size(Y), size(X)) !The dummys for Gx*Gy at each position 
-        real(real64) :: Ax_alt, Ay_alt, x0_alt, y0_alt, sig_x_alt, sig_y_alt
+        real(real64) :: Ax_alt, Ay_alt, x0_alt, y0_alt, sig_x_alt, sig_y_alt !The alternate inputs
         !Error handling for Ax, Ay, x0, y0, sig_x, sig_y
         if ( .not. present(x0) ) then
             x0_alt = 0.0_real64

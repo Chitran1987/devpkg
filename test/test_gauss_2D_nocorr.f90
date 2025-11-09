@@ -6,7 +6,7 @@ program test_gauss_2D_nocorr
   implicit none
   real(real64), allocatable :: X(:), Y(:), M(:,:,:)
   X = seq(st=-8.0_real64, en=10.0_real64, len=10**3)
-  Y = seq(st=-8.0_real64, en=10.0_real64, len=10**3)
+  Y = seq(st=-8.0_real64, en=10.0_real64, len=500)
   M = gauss_2D_nocorr(X, Y)
   print *, maxval(M(:,:,1))
 end program test_gauss_2D_nocorr
