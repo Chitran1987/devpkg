@@ -278,4 +278,39 @@ contains
 
     end function gauss_2D_nocorr
 
+    !Select a vertical line profile out of the Tm,n,p tensor  
+    function lin_prof_v(M, v_val) result(res_mat)
+        real(real64) :: M(:,:,:), v_val !inputs declaration
+        real(real64) :: res_mat(size(M,1), 2) !output declaration
+        real(real64) :: X_dumm(size(M,2)), dummy1(size(X_dumm)) !Dummy prior = 1
+        integer :: imin(1) !Dummy prior = 2
+
+        !core logic
+        res_mat(:,1) = M(:,1,3) !The X-axis(distance vector) of the line profile is the Y-axis(3rd slice, all rows any single column) of the tensor 
+        X_dumm = M(1,:,2) !Subset the X-axis of the tensor, to choose which X-value will be selected to draw the vertical line through 
+        dummy1 = abs(X_dumm - v_val)
+        !Get the index of the minimum value of dummy
+        imin = minloc(dummy1)
+        !Place the dataset from that index in the result matrix
+        res_mat(:,2) = M(:,imin(1),1) 
+
+    end function lin_prof_v
+
+    !Select a horizontal line profile out of the Tm,n,p tensor
+    function lin_prof_h(M, h_val) result(res_mat)
+        real(real64) :: M(:,:,:), h_val !inputs declaration
+        real(real64) :: res_mat(size(M,2), 2) !output declaration
+        real(real64) :: Y_dumm(size(M,1)), dummy1(size(Y_dumm)) !Dummy prior = 1
+        integer :: imin(1) !Dummy prior = 2
+
+        !core logic
+        res_mat(:,1) = M(1,:,2) !The X-axis(distance vector) of the line profile is the X-axis(2nd slice, all columns any single row) of the tensor
+        Y_dumm = M(:,1,3) !Subset the Y-axis of the tensor, to choose which Y-value will be selected to draw a horizontal line through
+        dummy1 = abs(Y_dumm - h_val)
+        !Get the index of the minimum value of the dummy
+        imin = minloc(dummy1)
+        !Place the sataset from that index in the result matrix
+        res_mat(:,2) = M(imin(1),:,1)
+    end function lin_prof_h
+
 end module vec_utils
