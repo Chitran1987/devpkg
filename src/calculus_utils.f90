@@ -70,7 +70,7 @@ contains
     end function differentiate
 
     !integrates a function to return a function(better algorithm)
-    function integrate_func(X, Y, y0) result(dat)
+    function integrate_func(X, Y, y0) result(dat) !This function is defined differently in the R package. It is named as integrate_function() and the next function is avoided
         real(real64) :: X(:), Y(:) !Inputs
         real(real64) :: dat(size(X), 2) !Output
         real(real64) :: tri_area(size(X)), dmp, y0
