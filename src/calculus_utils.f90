@@ -69,6 +69,26 @@ contains
 
     end function differentiate
 
+    !integrates a function to return a function(better algorithm)
+    function integrate_func(X, Y, y0) result(dat)
+        real(real64) :: X(:), Y(:) !Inputs
+        real(real64) :: dat(size(X), 2) !Output
+        real(real64) :: tri_area(size(X)), dmp, y0
+        integer :: m, i
+        m = size(X)
+        !Calculate the area under each sample vector
+        tri_area(1) = 0.0_real64
+        dmp = 0.0_real64
+        dat(1, 2) = 0.0_real64
+        dat(:,1) = X
+        do i = 2, m
+            dmp = dmp + (X(i) - X(i-1))*(Y(i) + Y(i+1))/2.0_real64
+            dat(i,2) = dmp
+        end do
+        !Add this to y0 
+        dat(:,2) = dat(:,2) + y0
+    end function integrate_func
+
     !integrates a function to return a function
     function integrate_function(X, Y, y0) result(dat)
         real(real64) :: X(:), Y(:) !Inputs
