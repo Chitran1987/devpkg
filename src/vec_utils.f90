@@ -313,4 +313,16 @@ contains
         res_mat(:,2) = M(imin(1),:,1)
     end function lin_prof_h
 
+    !Subroutine for creating a 2 slice X-Y (rank 2) tensor grid
+    function grid_2(X, Y) result(tens)
+        real(real64) :: X(:), Y(:) !Inputs 
+        real(real64) :: tens(size(Y), size(X), 2) !Outputs - Tensor size 
+        integer :: m, n
+        m = size(X)
+        n = size(Y)
+        tens(:,:,1) = spread(X, 1, n)
+        call rev(Y)
+        tens(:,:,2) = spread(Y, 2, m)
+    end function grid_2
+
 end module vec_utils
