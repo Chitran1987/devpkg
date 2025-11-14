@@ -341,4 +341,17 @@ contains
         close(tmp)
     end subroutine writeXY
 
+    subroutine MatrixWrite(M, nam)
+        real(real64) :: M(:,:)
+        character(len=*) :: nam
+        character(len = :), allocatable :: fnam
+        integer :: i, j, dmp_file
+        fnam = nam//'.txt'
+        open(newunit=dmp_file, file=fnam, status="replace", action="write")
+        do i = 1, size(M,1)
+            write(dmp_file,*) M(i,:)
+        end do
+        close(dmp_file)
+    end subroutine MatrixWrite
+
 end module vec_utils
