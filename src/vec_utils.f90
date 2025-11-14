@@ -325,4 +325,20 @@ contains
         tens(:,:,2) = spread(Y, 2, m)
     end function grid_2
 
+    !Write X Y data to a text file
+    subroutine writeXY(X, Y, nam)
+        real(real64) :: X(:), Y(:)
+        character(len=*), intent(in) :: nam
+        character(len=:), allocatable :: fname
+        character(len=4) :: ext
+        integer :: i, tmp
+        ext = '.txt'
+        fname = nam//ext
+        open(newunit = tmp, file = fname, status = 'replace')
+        do i = 1, size(X)
+            write(tmp, *) X(i), Y(i)
+        end do
+        close(tmp)
+    end subroutine writeXY
+
 end module vec_utils
