@@ -325,7 +325,7 @@ contains
         tens(:,:,2) = spread(Y, 2, m)
     end function grid_2
 
-    !Write X Y data to a text file
+    !Write X Y data to a text file called nam.txt at the project folder source
     subroutine writeXY(X, Y, nam)
         real(real64) :: X(:), Y(:)
         character(len=*), intent(in) :: nam
