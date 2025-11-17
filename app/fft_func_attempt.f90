@@ -1,7 +1,7 @@
 program fft_func_attempt
     !use trialpkg, only: say_hello
     use, intrinsic :: iso_c_binding
-    use fft_utils
+    use fft_utils1
     use plot_utils
     use vec_utils
     implicit none
