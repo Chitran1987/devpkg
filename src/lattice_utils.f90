@@ -17,9 +17,10 @@ function square_latt_sb(X, Y, R_latt, A, sig) result(tens)
   real(real64), allocatable :: tens_XY_00(:,:,:) !The same as tens with the X-Y grid in tens(:,:,:) set to X=0, Y=0, at the leftmost corner 
   real(real64) :: dmp_x, dmp_y !dummies 
   integer :: m_x, m_y
-  integer :: i, j
-  real(real64) :: xmin, xmax, ymin, ymax, gauss_dummy(size(Y),size(X),3)
+  integer :: i, j, k, cnt, dmp
+  real(real64) :: xmin, xmax, ymin, ymax, gauss_dummy(size(Y),size(X)) ! gauss_dummy(size(Y),size(X),3)
   real(real64), allocatable  :: X_sh(:), Y_sh(:) !The shifted X and Y vectors
+  real(real64) , allocatable :: pos(:,:)
 
   !error check
   if ( R_latt > maxval(X) - minval(X)  ) then
@@ -38,8 +39,9 @@ function square_latt_sb(X, Y, R_latt, A, sig) result(tens)
   tens_XY_00(:,:,1) = 0.0_real64
 
   !figure out the size of the loop and then the vector
-  m_x = ceiling((maxval(X) - minval(X))/R_latt)
-  m_y = ceiling((maxval(Y) - minval(Y))/R_latt) 
+  m_x = floor((maxval(X) - minval(X))/R_latt)
+  m_y = floor((maxval(Y) - minval(Y))/R_latt) 
+  allocate(pos((m_x+1)*(m_y+1), 2)) !Debug vector. Remove after debug
 
   !Run the loop
   xmin = minval(tens_XY_00(:,:,2))
@@ -48,18 +50,15 @@ function square_latt_sb(X, Y, R_latt, A, sig) result(tens)
   ymax = maxval(tens_XY_00(:,:,3))
   X_sh = X - minval(X)
   Y_sh = Y - minval(Y)
-  do i = 0, m_x
+  cnt = 1 !New indexing integer
+  do k = 0, m_x
     do j = 0, m_y
-      gauss_dummy = gauss_2D_nocorr(X = X_sh , Y = Y_sh, Ax = sqrt(A), Ay = sqrt(A), x0 = i*R_latt, y0 = j*R_latt, sig_x = sig, sig_y = sig)
-      tens_XY_00(:,:,1) = tens_XY_00(:,:,1) + gauss_dummy(:,:,1)
+      gauss_dummy = gauss_2D_nocorr_core(X=tens_XY_00(:,:,2), Y=tens_XY_00(:,:,3), A = 1.0_real64, x0 = k*R_latt, y0 = j*R_latt, sig_x = sig, sig_y = sig)
+      tens_XY_00(:,:,1) = tens_XY_00(:,:,1) + gauss_dummy
     end do
   end do
 
   tens(:,:,1) = tens_XY_00(:,:,1)
-
-
-
-
 end function square_latt_sb
 
 !Define a rectangular lattice

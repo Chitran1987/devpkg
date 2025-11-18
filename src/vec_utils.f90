@@ -222,12 +222,20 @@ contains
         y = gauss_1D_core(x, A_alt, x0_alt, sig_alt)
     end function gauss_1D
 
+    pure elemental real(real64) function gauss_2D_nocorr_core(X, Y, A, x0, y0, sig_x, sig_y ) result(out)
+        real(real64), intent(in) :: X, Y, A, x0, y0, sig_x, sig_y !Inputs
+        !real(real64) :: A, x0, y0, sig_x, sig_y
+        !real(real64) :: out
+        out = A*exp(-1.0_real64*( (X - x0)**2/(2.0_real64*sig_x**2) + (Y- y0)**2/(2.0_real64*sig_y**2) ))
+    end function gauss_2D_nocorr_core
+
+
     function gauss_2D_nocorr(X, Y, Ax, Ay, x0, y0, sig_x, sig_y) result(tens)
         real(real64), intent(in) :: X(:), Y(:) !The main inputs
         real(real64), optional :: Ax, Ay, x0, y0, sig_x, sig_y !The optional inputs
         real(real64) :: tens(size(Y), size(X), 3) !The output
-        real(real64) :: Xsp(size(Y), size(X)), Ysp(size(Y), size(X)), Gsp(size(Y), size(X)) !The dummys for each tensor position tens(:,:,1), tens(:,:,2) and tens(:,:,3)
-        real(real64) :: Gx(size(X)), Gy(size(Y)), Gx_sp(size(Y), size(X)), Gy_sp(size(Y), size(X)) !The dummys for Gx*Gy at each position 
+        real(real64) :: Gsp(size(Y), size(X)) !The Gaussian Matrix
+        real(real64) :: XYsp(size(Y), size(X), 2) !The XY spread called using grid2
         real(real64) :: Ax_alt, Ay_alt, x0_alt, y0_alt, sig_x_alt, sig_y_alt !The alternate inputs
         !Error handling for Ax, Ay, x0, y0, sig_x, sig_y
         if ( .not. present(x0) ) then
@@ -261,20 +269,12 @@ contains
             Ay_alt = Ay
         end if
         !
-        !The core algorithm
-        !First assume that everything is present
-        Gx = gauss_1D_core(X, Ax_alt, x0_alt, sig_x_alt)
-        Gy = gauss_1D_core(Y, Ay_alt, y0_alt, sig_y_alt)
-        call rev(Gy) !Gy needs to be reversed
-        Gx_sp = spread(Gx, dim=1, ncopies=size(Y))
-        Gy_sp = spread(Gy, dim=2, ncopies=size(X))
-        Gsp = Gx_sp*Gy_sp
-        Xsp = spread(X, dim = 1, ncopies=size(Y))
-        call rev(Y) !Y needs to be reversed for plotting as an X-Y plane
-        Ysp = spread(Y, dim = 2, ncopies=size(X))
+        !The core algorithm        
+        XYsp = grid_2(X, Y)
+        Gsp = gauss_2D_nocorr_core(X = XYsp(:,:,1), Y = XYsp(:,:,2), A = Ax_alt*Ay_alt, x0 = x0_alt, y0 = y0_alt, sig_x = sig_x_alt, sig_y = sig_y_alt)
         tens(:,:,1) = Gsp
-        tens(:,:,2) = Xsp
-        tens(:,:,3) = Ysp
+        tens(:,:,2) = XYsp(:,:,1)
+        tens(:,:,3) = XYsp(:,:,2)
 
     end function gauss_2D_nocorr
 
