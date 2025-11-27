@@ -10,8 +10,8 @@ program rect_lattice_XY_diff
     real(real64), allocatable :: X(:), Y(:), latt(:,:,:), grid(:,:,:) !Lattice variables
     real(real64), allocatable :: f_latt(:,:,:)
     !build the square lattice
-    X = seq(st=-10.0_real64, en=10.0_real64, len=500)
-    Y = seq(st = -8.0_real64, en = 8.0_real64, len = 400)
+    X = seq(st=-10.0_real64, en=10.0_real64, len=1000)
+    Y = seq(st = -8.0_real64, en = 8.0_real64, len = 800)
     !grid = grid_2(X, Y)
     allocate(latt(size(Y), size(X), 3))
     !latt(:,:,2) = grid(:,:,1)
