@@ -354,4 +354,18 @@ contains
         close(dmp_file)
     end subroutine MatrixWrite
 
+    subroutine rot_2D(x, y, alpha)
+        real(real64) :: x, y, x1, y1, alpha
+        x1 = x*cos(alpha) - y*sin(alpha)
+        y1 = y*cos(alpha) + x*sin(alpha)
+        x = x1 
+        y = y1
+    end subroutine rot_2D
+
+    function rot_pt_2D(pt, alpha) result(new_pt)
+        real(real64) :: pt(2), new_pt(2), alpha
+        call rot_2D(x = pt(1), y = pt(2), alpha = alpha)
+        new_pt = pt
+    end function rot_pt_2D
+
 end module vec_utils
