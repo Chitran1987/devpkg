@@ -108,7 +108,7 @@ contains
     end function fft_1D
 
     !fft_2D function
-    function fft_2D(tens) result(G)
+    function fft_2D(tens, sampling_del) result(G)
         !! 2D FFT on a rank-3 tensor tens(m,n,p)
         !!
         !! Input layout:
@@ -122,7 +122,7 @@ contains
         !!   G(:,:,3) = ω_x coordinates  (same shape as data)
         !!   G(:,:,4) = ω_y coordinates  (same shape as data)
 
-        real(real64), intent(in) :: tens(:,:,:)
+        real(real64), intent(in) :: tens(:,:,:), sampling_del
         real(real64) :: G(size(tens,1), size(tens,2), 4)
 
         ! dimensions
@@ -171,11 +171,18 @@ contains
         !    - assume X is constant along rows: use first row
         !    - assume Y is constant along columns: use first col
         ! -----------------------------------------------------
-        del_x = mean( diff( X(1,:) ) )
-        del_y = mean( diff( Y(:,1) ) )
+        del_x = abs(mean( diff( X(1,:) ) ))
+        del_y = abs(mean( diff( Y(:,1) ) ))
+
+        ! -------------------------------------------------------
+        ! Error checking in comparison to sampling rate
+        ! -------------------------------------------------------
+         if ( abs(del_x - del_y)/min(del_x, del_y) > sampling_del ) error stop 'sampling rates for X and Y differ by more than sampling_del'
 
         omega_sx = two_pi / del_x
         omega_sy = two_pi / del_y
+
+
 
         domega_x = omega_sx / real(n, real64)  ! bin width in ω_x
         domega_y = omega_sy / real(m, real64)  ! bin width in ω_y

@@ -21,7 +21,7 @@ program hex_lattice_build
     call MatrixWrite(M=latt(:,:,1), nam='lattice')
 
     !build the Fourier Transform
-    f_latt = fft_2D(tens = latt)
+    f_latt = fft_2D(tens = latt, sampling_del = 0.1_real64)
     call MatrixWrite(M=f_latt(:,:,1), nam = 'ft_lattice')
     
 end program hex_lattice_build

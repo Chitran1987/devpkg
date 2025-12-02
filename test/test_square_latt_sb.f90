@@ -11,7 +11,7 @@ program test_fft2D_function
   X = seq(st = -10.0_real64, en = 10.0_real64, len = 1000)
   Y = X
   tens = square_latt_sb(X = X, Y = Y, R_latt = 1.5_real64, A = 1.0_real64, sig = 0.25_real64)
-  ftens = fft_2D(tens)
+  ftens = fft_2D(tens, sampling_del=0.1_real64)
   call MatrixWrite(tens(:,:,1), 'sq_latt')
   call MatrixWrite(ftens(:,:,1), 'sq_latt_f')
 end program test_fft2D_function

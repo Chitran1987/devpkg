@@ -11,7 +11,7 @@ program test_fft2D_function
   integer :: n, m
   n = 500
   m = 500
-  X = seq(st=-5.0_real64*pi, en=5.0_real64, len=n)
+  X = seq(st=-5.0_real64*pi, en=5.0_real64*pi, len=n)
   Y = seq(st=-5.0_real64*pi, en=5.0_real64*pi, len=m)
   tens_XY = grid_2(X,Y)
   allocate(res(m, n, 3))
@@ -19,6 +19,6 @@ program test_fft2D_function
   res(:,:,3) = tens_XY(:,:,2)
   res(:,:,1) = sin(-1.0_real64*res(:,:,2)+ 0.5_real64*res(:,:,3))
   call MatrixWrite(res(:,:,1), 'lattice')
-  final = fft_2D(res)
+  final = fft_2D(res, 0.10_real64)
   call MatrixWrite(final(:,:,1), 'ft_lattice')
 end program test_fft2D_function
