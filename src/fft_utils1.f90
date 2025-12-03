@@ -171,8 +171,8 @@ contains
         !    - assume X is constant along rows: use first row
         !    - assume Y is constant along columns: use first col
         ! -----------------------------------------------------
-        del_x = abs(mean( diff( X(1,:) ) ))
-        del_y = abs(mean( diff( Y(:,1) ) ))
+        del_x = mean(diff( X(1,:) ))
+        del_y = mean(diff( Y(:,1) ))
 
         ! -------------------------------------------------------
         ! Error checking in comparison to sampling rate

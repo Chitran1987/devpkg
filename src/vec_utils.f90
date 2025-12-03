@@ -41,6 +41,17 @@ contains
         end do
     end function seq
 
+    !function produces a sequence with start, length and increment
+    function seqn(st, len, del) result(out)
+        real(real64) :: st, del
+        integer :: len
+        real(real64) :: out(len)
+        integer :: i
+        do i = 1, len
+            out(i) = st + (i-1)*del
+        end do
+    end function seqn
+
     !function calculates the difference of subsequent nos in a vector
     function diff(X)
         real(real64), dimension(:), intent(in)::X
@@ -367,5 +378,63 @@ contains
         call rot_2D(x = pt(1), y = pt(2), alpha = alpha)
         new_pt = pt
     end function rot_pt_2D
+
+    function zero_pad_tens(tens) result(res_tens)
+        real(real64) :: tens(:,:,:)
+        real(real64), allocatable :: res_tens(:,:,:)
+        real(real64), allocatable :: X(:), Y(:), X_new(:), Y_new(:)
+        real(real64), allocatable :: tens_dat(:,:), tens_X(:,:), tens_Y(:,:)
+        real(real64) :: del_X, del_Y
+        integer :: m, n, p, q
+
+        X = tens(1,:,2)
+        Y = tens(:,1,3)
+        m = size(tens, 1)
+        n = size(tens, 2)
+
+        del_X = mean(diff(X))
+        del_Y = mean(diff(Y))
+
+        ! -----------------------------------
+        ! Return the result if m = n else allocate variables and calculatr
+        ! -----------------------------------
+        if ( m > n ) then
+            allocate(tens_dat(m,m))
+            allocate(tens_X(m,m))
+            allocate(tens_Y(m,m))
+            allocate(res_tens(m,m,3))
+            allocate(X_new(m))
+            tens_Y = spread(Y, 2, m)
+            X_new = seqn(st = X(1), len = m, del = del_X)
+            tens_X = spread(X_new, 1, m)
+            tens_dat(:,1:n) = tens(:,:,1)
+            tens_dat(:,(n+1):m) = 0.0_real64
+            res_tens(:,:,1) = tens_dat
+            res_tens(:,:,2) = tens_X
+            res_tens(:,:,3) = tens_Y
+            return
+        else if (m == n) then
+            res_tens = tens
+            return
+        else 
+            allocate(tens_dat(n,n))
+            allocate(tens_X(n,n))
+            allocate(tens_Y(n,n))
+            allocate(res_tens(n,n,3))
+            allocate(Y_new(n))
+            tens_X = spread(X, 1, n)
+            Y_new = seqn(st = Y(1), len = n, del = del_Y) !Check this line !Maybe Y_new needs Y to be reversed
+            tens_Y = spread(Y_new, 2, n)
+            tens_dat(1:m,:) = tens(:,:,1)
+            tens_dat((m+1):n,:) = 0.0_real64
+            res_tens(:,:,1) = tens_dat
+            res_tens(:,:,2) = tens_X
+            res_tens(:,:,3) = tens_Y
+            return
+        end if
+    end function zero_pad_tens
+
+
+
 
 end module vec_utils
