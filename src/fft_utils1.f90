@@ -107,8 +107,8 @@ contains
 
     end function fft_1D
 
-    !fft_2D function
-    function fft_2D(tens, sampling_del) result(G)
+    !fft_2D function core module
+    function fft_2D_core_mod(tens, sampling_del) result(G)
         !! 2D FFT on a rank-3 tensor tens(m,n,p)
         !!
         !! Input layout:
@@ -242,6 +242,18 @@ contains
         G(:,:,3) = Wx
         G(:,:,4) = Wy
 
+    end function fft_2D_core_mod
+
+    !fft_2D after zero padding
+    function fft_2D(tens, sampling_del) result(G)
+        real(real64) :: tens(:,:,:), sampling_del !Inputs
+        real(real64), allocatable :: G(:,:,:) !Outputs
+        real(real64), allocatable :: tens_padded(:,:,:) !Internal
+
+        !Zero pad the tensor
+        tens_padded = zero_pad_tens(tens)
+        G = fft_2D_core_mod(tens_padded, sampling_del)
+        return
     end function fft_2D
 
 end module fft_utils1
