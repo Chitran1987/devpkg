@@ -10,8 +10,8 @@ program test_zero_pad_rect
     real(real64), allocatable :: tens(:,:,:), tens_new(:,:,:)
     real(real64), allocatable :: f_tens(:,:,:), f_tens_new(:,:,:)
     real(real64), allocatable :: X(:), Y(:)
-    X = seq(st=-10.0_real64, en = 10.0_real64, len = 1000)
-    Y = seq(st = -5.0_real64, en = 5.0_real64, len = 500)
+    X = seq(st=-10.0_real64, en = 10.0_real64, len = 500)
+    Y = seq(st = -10.0_real64, en = 10.0_real64, len = 500)
 
     ! Create the rectangular lattice and write it
     tens = rect_latt_sb(X = X, Y = Y, r_latt_x = 1.0_real64, r_latt_y = 0.5_real64, A = 1.0_real64, sig = 0.15_real64)
