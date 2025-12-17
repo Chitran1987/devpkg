@@ -177,7 +177,7 @@ contains
         ! -------------------------------------------------------
         ! Error checking in comparison to sampling rate
         ! -------------------------------------------------------
-         if ( abs(del_x - del_y)/min(del_x, del_y) > sampling_del ) error stop 'sampling rates for X and Y differ by more than sampling_del'
+         if ( abs(abs(del_x) - abs(del_y))/min(abs(del_x), abs(del_y)) > sampling_del ) error stop 'sampling rates for X and Y differ by more than sampling_del'
 
         omega_sx = two_pi / del_x
         omega_sy = two_pi / del_y
