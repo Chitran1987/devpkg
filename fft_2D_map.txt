@@ -1,0 +1,10 @@
+    function fft_2D_map(img_tens, img_lim ) result(res_tens)
+        real(real64) :: img_tens(:,:,:) !The image tensor on which the fft_2D_map() will be applied
+        real(real64) :: img_lim(2,2) !A 2X2 matrix with first row having xlims and next row having ylims. Needed for the matrix masking
+        real(real64) :: res_tens(size(img_tens,1), size(img_tens,2), size(img_tens,3))  !The res_tens showing the resulting tensor
+
+        !!Transfer the X and Y matrixes to the result
+        res_tens(:,:,2) = img_tens(:,:,2) !The X matrix transfer
+        res_tens(:,:,3) = img_tens(:,:,3) !The Y matrix transfer
+
+    end function fft_2D_map

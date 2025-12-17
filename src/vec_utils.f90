@@ -456,7 +456,15 @@ contains
 
     end function mask_tens
 
-
+    function mask_tens_cent(tens, cent, Xspan, Yspan) result(res_tens)
+        real(real64) :: tens(:,:,:), cent(2), Xspan, Yspan !Inputs
+        real(real64) :: res_tens(size(tens, 1), size(tens, 2), size(tens, 3)) !Outputs
+        real(real64) :: x_lim(2), y_lim(2) !Internals
+        x_lim = [cent(1)-Xspan/2.0_real64, cent(1)+Xspan/2.0_real64]
+        y_lim = [cent(2)-Yspan/2.0_real64, cent(2)+Yspan/2.0_real64]
+        res_tens = mask_tens(tens=tens, xlim=x_lim, ylim=y_lim)
+        return
+    end function mask_tens_cent
 
 
 end module vec_utils
