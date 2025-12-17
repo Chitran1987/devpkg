@@ -434,6 +434,28 @@ contains
         end if
     end function zero_pad_tens
 
+    function mask_tens(tens, xlim, ylim) result(res_tens)
+
+        !_____Input and Output arguments_________________________________!
+        real(real64) :: tens(:,:,:), xlim(2), ylim(2) !Inputs
+        real(real64) :: res_tens(size(tens, 1), size(tens, 2), size(tens, 3)) !Outputs
+        !_____Input and Output arguments_________________________________!
+
+        !_____Internal declarations_________________________________!
+        logical :: mask(size(tens, 1), size(tens, 2)) !The dummy mask
+        !_____Internal declarations_________________________________!
+
+        !_____core logic_____________________________________________!
+        mask = ((tens(:,:,2) >= xlim(1)) .and. (tens(:,:,2) <= xlim(2))) .and. ( (tens(:,:,3) >= ylim(1)) .and. (tens(:,:,3) <= ylim(2)) )
+        res_tens = tens
+        where ( mask .eqv. .false. )
+            res_tens(:,:,1) = 0.0_real64
+        end where
+        return
+        !_____core logic_____________________________________________!
+
+    end function mask_tens
+
 
 
 
