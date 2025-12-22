@@ -1,4 +1,4 @@
-program test_fft2D_map_function
+program test_sigmoid
   use iso_fortran_env, only: real64
   use vec_utils
   use stat_utils
@@ -14,4 +14,4 @@ program test_fft2D_map_function
   call plot_gnu(X, Y)
   Y = sigmoid_plat(X=X, k=10.0_real64, left_cut=-8.0_real64, right_cut=8.0_real64)
   call plot_gnu(X, Y)
-end program test_fft2D_map_function
+end program test_sigmoid
