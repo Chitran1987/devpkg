@@ -489,4 +489,17 @@ contains
         return
     end function sigmoid_2D
 
+    !window_sigmoid()
+    function window_sigmoid(tens, cent, k, Xspan, Yspan) result(res_tens)
+        real(real64) :: tens(:,:,:), cent(2)
+        real(real64) :: res_tens(size(tens, 1), size(tens, 2), 3)
+        real(real64) :: k, Xspan, Yspan
+        real(real64) :: offset_X, offset_Y !Internal variable
+        offset_X = Xspan/10.0_real64
+        res_tens(:,:,2:3) = tens(:,:,2:3)
+        res_tens(:,:,1) = sigmoid_2D(x=res_tens(:,:,2), y= res_tens(:,:,3), k=k, x_lo = cent(1)-Xspan/2.0_real64+offset_X, x_hi = cent(1)+Xspan/2.0_real64-offset_X, y_lo = cent(2)-Yspan/2.0_real64+offset_Y, y_hi = cent(2)+Yspan/2.0_real64-offset_Y)
+        res_tens(:,:,1) = res_tens(:,:,1)*tens(:,:,1)
+        return
+    end function window_sigmoid
+
 end module vec_utils

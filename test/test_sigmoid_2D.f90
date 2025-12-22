@@ -7,10 +7,15 @@ program test_sigmoid_2D
   use lattice_utils
   use fft_utils1
   implicit none
-  real(real64), allocatable :: X(:), Y(:), XY(:,:,:), M(:,:)
+  real(real64), allocatable :: X(:), Y(:), XY(:,:,:), M(:,:), tens(:,:,:), ftens(:,:,:)
   X = seq(st=-10.0_real64, en=10.0_real64, len=500)
   Y = X
   XY = grid_2(X,Y)
   M = sigmoid_2D(x=XY(:,:,1), y=XY(:,:,2), k=10.0_real64, x_lo=-15.0_real64, y_lo=-9.0_real64, x_hi=9.0_real64, y_hi=15.0_real64)
   call MatrixWrite(M=M, nam='test_sigmoid_2D')
+  allocate(tens(size(M,1), size(M,2), 3))
+  tens(:,:,1) = M
+  tens(:,:,2:3) = XY
+  ftens = fft_2D(tens=tens, sampling_del=0.1_real64)
+  call MatrixWrite(M=ftens(:,:,1), nam='test_sigmoid_2D_fft')
 end program test_sigmoid_2D

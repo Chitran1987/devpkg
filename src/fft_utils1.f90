@@ -323,7 +323,8 @@ contains
         do j = 1, n, 1
             do i = 1, m, 1
                 center = [img_tens(i,j,2), img_tens(i,j,3)]
-                tmp_img = mask_tens_cent(tens=img_tens, cent=center, Xspan=Xspan, Yspan=Yspan) !The tmp_img has been created
+                !tmp_img = mask_tens_cent(tens=img_tens, cent=center, Xspan=Xspan, Yspan=Yspan) !The tmp_img has been created
+                tmp_img = window_sigmoid(tens=img_tens, cent=center, k = 10.0_real64, Xspan = Xspan, Yspan = Yspan)
                 fft_tmp = fft_2D(tens = tmp_img, sampling_del = 0.1_real64) !The fft_tmp has been created
                 !--------------Integration jobs over the fft_tmp image---------------------------------------------------!
                 !--------Integrate over the 1st/higher order spots----------------!
