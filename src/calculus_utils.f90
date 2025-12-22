@@ -107,6 +107,7 @@ contains
         dat(:,2) = dat(:,2) + y0
     end function integrate_function
 
+    !integrates an area enclosed by a box in a rank-3 tensor
 
 
 end module calculus_utils

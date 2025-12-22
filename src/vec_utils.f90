@@ -466,5 +466,4 @@ contains
         return
     end function mask_tens_cent
 
-
 end module vec_utils

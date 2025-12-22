@@ -18,7 +18,7 @@ program test_fft2D_function
   res(:,:,2) = tens_XY(:,:,1)
   res(:,:,3) = tens_XY(:,:,2)
   res(:,:,1) = sin(-1.0_real64*res(:,:,2)+ 0.5_real64*res(:,:,3))
-  call MatrixWrite(res(:,:,1), 'lattice')
+  call MatrixWrite(res(:,:,1), 'lattice1')
   final = fft_2D(res, 0.10_real64)
-  call MatrixWrite(final(:,:,1), 'ft_lattice')
+  call MatrixWrite(final(:,:,1), 'ft_lattice1')
 end program test_fft2D_function
