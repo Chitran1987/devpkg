@@ -434,6 +434,7 @@ contains
         end if
     end function zero_pad_tens
 
+    !Mask tensor function which is defined w.r.t xlim and ylim co-ordinates
     function mask_tens(tens, xlim, ylim) result(res_tens)
 
         !_____Input and Output arguments_________________________________!
@@ -456,6 +457,7 @@ contains
 
     end function mask_tens
 
+    !Mask tensor function which is defined w.r.t cent, Xspan, Yspan instead of co-ordinates
     function mask_tens_cent(tens, cent, Xspan, Yspan) result(res_tens)
         real(real64) :: tens(:,:,:), cent(2), Xspan, Yspan !Inputs
         real(real64) :: res_tens(size(tens, 1), size(tens, 2), size(tens, 3)) !Outputs
@@ -467,10 +469,16 @@ contains
     end function mask_tens_cent
 
     function sigmoid(X, k, cutoff) result(Y)
-        real(real64) :: X(:), k, cutoff
+        real(real64) :: X(:), k, cutoff !Input variables vector X, sharpness k, cutoff/fermi_level
         real(real64) ::Y(size(X))
         Y = 1/(1 + exp(-k*(X-cutoff)))
         return
     end function sigmoid
+
+    function sigmoid_plat(X, k, left_cut, right_cut) result(Y)
+        real(real64) :: X(:), Y(size(X)), k, left_cut, right_cut
+        Y = sigmoid(X=X, k=k, cutoff=left_cut) - sigmoid(X=X, k=k, cutoff=right_cut)
+        return
+    end function sigmoid_plat
 
 end module vec_utils
