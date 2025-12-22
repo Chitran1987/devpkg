@@ -466,4 +466,11 @@ contains
         return
     end function mask_tens_cent
 
+    function sigmoid(X, k, cutoff) result(Y)
+        real(real64) :: X(:), k, cutoff
+        real(real64) ::Y(size(X))
+        Y = 1/(1 + exp(-k*(X-cutoff)))
+        return
+    end function sigmoid
+
 end module vec_utils
