@@ -340,7 +340,7 @@ contains
                 mask_recip_center = ( (fft_tmp(:,:,3) >= k0x_lim(1)) .and. (fft_tmp(:,:,3) <= k0x_lim(2)) ) .and. ( (fft_tmp(:,:,4) >= k0y_lim(1)) .and. (fft_tmp(:,:,4) <= k0y_lim(2)) )
                 dmp_sum_zero = sum(fft_tmp(:,:,1), mask_recip_center)             !--------Integrate over the zero order spots----------------!
                 !--------------Integration jobs over the fft_tmp image---------------------------------------------------!
-                res_tens(i,j,1) = dmp_sum/dmp_sum_zero
+                res_tens(i,j,1) = dmp_sum/(dmp_sum_zero+10**(-5))
             end do
         end do
         !$omp end parallel do

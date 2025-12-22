@@ -468,17 +468,25 @@ contains
         return
     end function mask_tens_cent
 
-    function sigmoid(X, k, cutoff) result(Y)
-        real(real64) :: X(:), k, cutoff !Input variables vector X, sharpness k, cutoff/fermi_level
-        real(real64) ::Y(size(X))
-        Y = 1/(1 + exp(-k*(X-cutoff)))
+    !The one sided sigmoid function
+    pure elemental real(real64) function sigmoid(x, k, cutoff) result(y)
+        real(real64), intent(in) :: x, k, cutoff !Input variables vector X, sharpness k, cutoff/fermi_level
+        y = 1/(1 + exp(-k*(x-cutoff)))
         return
     end function sigmoid
 
-    function sigmoid_plat(X, k, left_cut, right_cut) result(Y)
-        real(real64) :: X(:), Y(size(X)), k, left_cut, right_cut
-        Y = sigmoid(X=X, k=k, cutoff=left_cut) - sigmoid(X=X, k=k, cutoff=right_cut)
+    !The two sided sigmoid function or the sigmoid plateau function sigmoid_plat()
+    pure elemental real(real64) function sigmoid_plat(x, k, left_cut, right_cut) result(y)
+        real(real64), intent(in) :: x, k, left_cut, right_cut
+        Y = sigmoid(x=x, k=k, cutoff=left_cut) - sigmoid(x=x, k=k, cutoff=right_cut)
         return
     end function sigmoid_plat
+
+    !function sigmoid_2D
+    pure elemental real(real64) function sigmoid_2D(x, y, k, x_lo, x_hi, y_lo, y_hi) result(z)
+        real(real64), intent(in) :: x, y, k, x_lo, x_hi, y_lo, y_hi
+        z = ( sigmoid_plat(x=x, k=k, left_cut=x_lo, right_cut=x_hi) )*( sigmoid_plat(x=y, k=k, left_cut=y_lo, right_cut=y_hi) )
+        return
+    end function sigmoid_2D
 
 end module vec_utils
