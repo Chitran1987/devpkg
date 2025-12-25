@@ -503,8 +503,11 @@ contains
     end function window_sigmoid
 
     !plot box 1
-    function plot_box1(img_tens, box_vec) result(res_tens)
-        real(real64) :: img_tens(:,:,:), box_vec(4)
+    function plot_box1(img_tens, box_vec, box_if) result(res_tens)
+        !img_tens ----> The img over which boxes should be drawn
+        !box_vec -----> The vector caarying the co-ordinates (x0, y0, x1, y1)
+        !box_if ------> The intensity factor by which the box color > maxval(img_tens(:,:,1)) in grayscale 
+        real(real64) :: img_tens(:,:,:), box_vec(4), box_if
         real(real64) :: res_tens(size(img_tens, 1), size(img_tens, 2), size(img_tens, 3))
         real(real64) :: A(2), B(2), C(2), D(2)
         logical :: mask(size(img_tens, 1), size(img_tens, 2)) !Internal
@@ -522,24 +525,39 @@ contains
         !Line AB Horizontal !delta used in Y
         mask = (res_tens(:,:,2) >= A(1)) .and. (res_tens(:,:,2) <= B(1)) .and. (res_tens(:,:,3) >= A(2)-delta) .and. (res_tens(:,:,3) <= A(2)+delta)
         where ( mask )
-            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+            res_tens(:,:,1) = box_if*maxval(img_tens(:,:,1))
         end where
         !Line BC Vertical !delta used in X
         mask = (res_tens(:,:,2) >= B(1)-delta) .and. (res_tens(:,:,2) <= C(1)+delta) .and. (res_tens(:,:,3) >= B(2)) .and. (res_tens(:,:,3) <= C(2))
         where ( mask )
-            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+            res_tens(:,:,1) = box_if*maxval(img_tens(:,:,1))
         end where
         !Line DC Horizontal !delta used in Y
         mask = (res_tens(:,:,2) >= D(1)) .and. (res_tens(:,:,2) <= C(1)) .and. ( res_tens(:,:,3) >= C(2)-delta) .and. (res_tens(:,:,3) <= D(2)+delta)
         where ( mask )
-            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))            
+            res_tens(:,:,1) = box_if*maxval(img_tens(:,:,1))            
         end where
         !Line AD Vertical !delta used in X
         mask = (res_tens(:,:,2) >= A(1)-delta) .and. (res_tens(:,:,2) <= D(1)+delta) .and. (res_tens(:,:,3) >= A(2)) .and. (res_tens(:,:,3) <= D(2))
         where ( mask )
-            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+            res_tens(:,:,1) = box_if*maxval(img_tens(:,:,1))
         end where
         return
     end function plot_box1
+
+    function plot_boxes(img_tens, box_mat) result(res_tens)
+        real(real64) :: img_tens(:,:,:), box_mat(:,:) !Input arguments
+        real(real64) :: res_tens(size(img_tens, 1), size(img_tens, 2), 3) !Output declaration
+        integer :: n_boxes !Internal ---> No of boxes
+        integer :: i !Internal
+        !-----------core logic---------------------------! 
+        res_tens = img_tens
+        n_boxes = size(box_mat, 1)
+        do i = 1, n_boxes
+            res_tens = plot_box1(img_tens = res_tens, box_vec = box_mat(i,:), box_if = 1.0_real64)           
+        end do
+        !-----------core logic---------------------------!
+        return
+    end function plot_boxes
 
 end module vec_utils

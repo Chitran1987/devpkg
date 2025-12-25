@@ -13,6 +13,6 @@ program test_plot_box1
   Y = X
   tens = square_latt_sb(X=X, Y=Y, R_latt=0.5_real64, A=1.0_real64, sig=0.1_real64)
   call MatrixWrite(M=tens(:,:,1), nam='test_plot_box1_0.0')
-  pl_tens = plot_box1(img_tens=tens, box_vec= [-2.0_real64, -2.0_real64, 2.0_real64, 2.0_real64])
+  pl_tens = plot_box1(img_tens=tens, box_vec= [-2.0_real64, -2.0_real64, 2.0_real64, 2.0_real64], box_if=2.0_real64)
   call MatrixWrite(M=pl_tens(:,:,1), nam='test_plot_box1_0.1')
 end program test_plot_box1
