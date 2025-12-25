@@ -502,4 +502,44 @@ contains
         return
     end function window_sigmoid
 
+    !plot box 1
+    function plot_box1(img_tens, box_vec) result(res_tens)
+        real(real64) :: img_tens(:,:,:), box_vec(4)
+        real(real64) :: res_tens(size(img_tens, 1), size(img_tens, 2), size(img_tens, 3))
+        real(real64) :: A(2), B(2), C(2), D(2)
+        logical :: mask(size(img_tens, 1), size(img_tens, 2)) !Internal
+        real(real64) :: delta !Internal
+        !-----------------------Core Logic-------------------------------------------------------------------------------------!
+        res_tens = img_tens !pass the values to res_tens
+        !Transfer the values
+        A = [box_vec(1), box_vec(2)]
+        B = [box_vec(3), box_vec(2)]
+        C = [box_vec(3), box_vec(4)]
+        D = [box_vec(1), box_vec(4)]
+        delta = 2.0_real64*mean(diff(img_tens(1,:,2)))
+        !Mask and draw the box
+        !Mask for X
+        !Line AB Horizontal !delta used in Y
+        mask = (res_tens(:,:,2) >= A(1)) .and. (res_tens(:,:,2) <= B(1)) .and. (res_tens(:,:,3) >= A(2)-delta) .and. (res_tens(:,:,3) <= A(2)+delta)
+        where ( mask )
+            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+        end where
+        !Line BC Vertical !delta used in X
+        mask = (res_tens(:,:,2) >= B(1)-delta) .and. (res_tens(:,:,2) <= C(1)+delta) .and. (res_tens(:,:,3) >= B(2)) .and. (res_tens(:,:,3) <= C(2))
+        where ( mask )
+            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+        end where
+        !Line DC Horizontal !delta used in Y
+        mask = (res_tens(:,:,2) >= D(1)) .and. (res_tens(:,:,2) <= C(1)) .and. ( res_tens(:,:,3) >= C(2)-delta) .and. (res_tens(:,:,3) <= D(2)+delta)
+        where ( mask )
+            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))            
+        end where
+        !Line AD Vertical !delta used in X
+        mask = (res_tens(:,:,2) >= A(1)-delta) .and. (res_tens(:,:,2) <= D(1)+delta) .and. (res_tens(:,:,3) >= A(2)) .and. (res_tens(:,:,3) <= D(2))
+        where ( mask )
+            res_tens(:,:,1) = 2.0_real64*maxval(img_tens(:,:,1))
+        end where
+        return
+    end function plot_box1
+
 end module vec_utils
