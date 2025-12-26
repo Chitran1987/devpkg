@@ -503,7 +503,7 @@ contains
     end function window_sigmoid
 
     !plot box 1
-    function plot_box1(img_tens, box_vec, box_if) result(res_tens)
+    function plot_box1(img_tens, box_vec, box_if, box_thick) result(res_tens)
         !img_tens ----> The img over which boxes should be drawn
         !box_vec -----> The vector caarying the co-ordinates (x0, y0, x1, y1)
         !box_if ------> The intensity factor by which the box color > maxval(img_tens(:,:,1)) in grayscale 
@@ -511,9 +511,10 @@ contains
         real(real64) :: res_tens(size(img_tens, 1), size(img_tens, 2), size(img_tens, 3))
         real(real64) :: A(2), B(2), C(2), D(2)
         logical :: mask(size(img_tens, 1), size(img_tens, 2)) !Internal
-        real(real64) :: delta !Internal
+        real(real64) :: box_thick, delta !Internal
         !-----------------------Core Logic-------------------------------------------------------------------------------------!
         res_tens = img_tens !pass the values to res_tens
+        delta = box_thick
         !Transfer the values
         A = [box_vec(1), box_vec(2)]
         B = [box_vec(3), box_vec(2)]
@@ -545,8 +546,8 @@ contains
         return
     end function plot_box1
 
-    function plot_boxes(img_tens, box_mat) result(res_tens)
-        real(real64) :: img_tens(:,:,:), box_mat(:,:) !Input arguments
+    function plot_boxes(img_tens, box_mat, box_thick, box_if) result(res_tens)
+        real(real64) :: img_tens(:,:,:), box_mat(:,:), box_thick, box_if !Input arguments
         real(real64) :: res_tens(size(img_tens, 1), size(img_tens, 2), 3) !Output declaration
         integer :: n_boxes !Internal ---> No of boxes
         integer :: i !Internal
@@ -554,7 +555,7 @@ contains
         res_tens = img_tens
         n_boxes = size(box_mat, 1)
         do i = 1, n_boxes
-            res_tens = plot_box1(img_tens = res_tens, box_vec = box_mat(i,:), box_if = 1.0_real64)           
+            res_tens = plot_box1(img_tens = res_tens, box_vec = box_mat(i,:), box_thick = box_thick, box_if = box_if)           
         end do
         !-----------core logic---------------------------!
         return
