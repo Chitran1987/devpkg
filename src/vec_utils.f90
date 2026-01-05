@@ -561,4 +561,27 @@ contains
         return
     end function plot_boxes
 
+    function mask_box(tens, box_vec) result(res_tens)
+        real(real64) :: tens(:,:,:), box_vec(4) !Inputs
+        real(real64) :: res_tens(size(tens, 1), size(tens, 2), 3) !Output
+        
+        !----------Internal-------------------------------!
+        logical :: mask(size(tens, 1), size(tens, 2))
+        real(real64) :: x_LL, y_LL, x_UR, y_UR
+        
+        !----------Internal-------------------------------!
+        !----------core logic-----------------------------!
+        res_tens = tens !Transfer data to res_tens
+        x_LL = box_vec(1)
+        y_LL = box_vec(2)
+        x_UR = box_vec(3)
+        y_UR = box_vec(4)
+        mask = (tens(:,:,2) >= x_LL) .and. (tens(:,:,2) <= x_UR) .and. (tens(:,:,3) >= y_LL) .and. (tens(:,:,3) <= y_UR)
+        where(mask)
+            res_tens(:,:,1) = minval(res_tens(:,:,1))
+        end where
+        !----------core logic-----------------------------!
+        return
+    end function mask_box
+
 end module vec_utils
