@@ -596,12 +596,37 @@ contains
         !!core logic----------------------------------------------!
         mask = X >= val !create mask
         where(mask)
-            Y = 1
+            Y = 1.0_real64
         end where 
         where(.not.mask)
-            Y = 0
+            Y = 0.0_real64
         end where
         return
     end function Heaviside
+
+    function Heaviside_2D(grid, val) result(tens)
+        !Inputs-----------------------------------------!
+        real(real64) :: grid(:,:,:), val(2)
+        !Outputs----------------------------------------!
+        real(real64) :: tens(size(grid,1), size(grid,2),3)
+        !Intermediate-----------------------------------!
+        real(real64) :: M(size(grid,1), size(grid,2))
+        logical :: mask_X(size(grid,1), size(grid,2))
+        logical :: mask_Y(size(grid,1), size(grid,2))
+        logical :: mask(size(grid,1), size(grid,2))
+        !Core Logic------------------------------------------!
+        mask_X = grid(:,:,1) >= val(1)
+        mask_Y = grid(:,:,2) >= val(2)
+        mask = mask_X .and. mask_Y
+        where(mask)
+            M = 1.0_real64
+        end where
+        where(.not. mask)
+            M = 0.0_real64
+        end where
+        tens(:,:,2:3) = grid
+        tens(:,:,1) = M
+        return
+    end function Heaviside_2D
 
 end module vec_utils
