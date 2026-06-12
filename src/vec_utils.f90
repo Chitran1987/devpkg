@@ -584,5 +584,24 @@ contains
         return
     end function mask_box
 
+    function Heaviside(X, val) result(Y)
+        !!Inputs-------------------------------------------!
+        !X is the sequence against which Y is created
+        !val is the value within X against which heaviside function is created
+        real(real64) :: X(:), val
+        !!Outputs-------------------------------------------!
+        real(real64) :: Y(size(X))
+        !!Internals-----------------------------------------!
+        logical :: mask(size(X))
+        !!core logic----------------------------------------------!
+        mask = X >= val !create mask
+        where(mask)
+            Y = 1
+        end where 
+        where(.not.mask)
+            Y = 0
+        end where
+        return
+    end function Heaviside
 
 end module vec_utils
