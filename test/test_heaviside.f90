@@ -10,6 +10,6 @@ program test_heaviside
     real(real64) :: start
     start = 1.75_real64
     X = seq(st=-10.0_real64, en=10.0_real64, len=10000)
-    Y = Heaviside(X=X, val=start)
+    Y = Heaviside(X=X, val=start, right=.false.)
     call plot_gnu(X=X, Y=Y)
 end program test_heaviside

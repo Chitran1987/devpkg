@@ -584,17 +584,23 @@ contains
         return
     end function mask_box
 
-    function Heaviside(X, val) result(Y)
+    function Heaviside(X, val, right) result(Y)
         !!Inputs-------------------------------------------!
         !X is the sequence against which Y is created
         !val is the value within X against which heaviside function is created
         real(real64) :: X(:), val
+        logical :: right
         !!Outputs-------------------------------------------!
         real(real64) :: Y(size(X))
         !!Internals-----------------------------------------!
         logical :: mask(size(X))
         !!core logic----------------------------------------------!
-        mask = X >= val !create mask
+        if ( right ) then
+            mask = X >= val !create mask
+        else 
+            mask = X <= val !create mask
+        end if
+        
         where(mask)
             Y = 1.0_real64
         end where 
@@ -604,9 +610,10 @@ contains
         return
     end function Heaviside
 
-    function Heaviside_2D(grid, val) result(tens)
+    function Heaviside_2D(grid, val, right_top) result(tens)
         !Inputs-----------------------------------------!
         real(real64) :: grid(:,:,:), val(2)
+        logical :: right_top(2)
         !Outputs----------------------------------------!
         real(real64) :: tens(size(grid,1), size(grid,2),3)
         !Intermediate-----------------------------------!
@@ -614,9 +621,20 @@ contains
         logical :: mask_X(size(grid,1), size(grid,2))
         logical :: mask_Y(size(grid,1), size(grid,2))
         logical :: mask(size(grid,1), size(grid,2))
+        logical :: right, top
         !Core Logic------------------------------------------!
-        mask_X = grid(:,:,1) >= val(1)
-        mask_Y = grid(:,:,2) >= val(2)
+        right = right_top(1)
+        top = right_top(2)
+        if ( right ) then
+            mask_X = grid(:,:,1) >= val(1)
+        else
+            mask_X = grid(:,:,1) <= val(1)
+        end if
+        if ( top ) then
+            mask_Y = grid(:,:,2) >= val(2)
+        else
+            mask_Y = grid(:,:,2) <= val(2)
+        end if
         mask = mask_X .and. mask_Y
         where(mask)
             M = 1.0_real64
