@@ -89,5 +89,6 @@ function lin_bg_sub_1D(dat, win, min_zero) result(ret_mat)
         ret_mat(:,2) = ret_mat(:,2) - minval(ret_mat(:,2))
     end if
 end function lin_bg_sub_1D
+
     
 end module stat_utils
