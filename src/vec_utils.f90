@@ -647,4 +647,14 @@ contains
         return
     end function Heaviside_2D
 
+    !function produces a uniformly distributed variable X ~ (min_val, max_val)
+	function unidistr(len, min_val, max_val) result(Y)
+		integer :: len
+		real(real64) :: min_val, max_val
+		real(real64) :: Y(len)
+		call random_number(Y)
+		Y = Y*(max_val - min_val) + min_val
+		return
+	end function unidistr
+
 end module vec_utils
