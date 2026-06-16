@@ -181,5 +181,30 @@ function funcdistr(len, min_val, max_val, dat_X, dat_Y, scale) result(Y)
     Y = pack(X1, mask)
     return
 end function funcdistr
+
+!rejection sampling
+!create a function for rejection sampling
+function rejection_sampling(len, min_val, max_val, dat_X, dat_Y)result(Y)
+    !Inputs
+    integer :: len
+    real(real64) :: min_val, max_val
+    real(real64) :: dat_X(:)
+    real(real64) :: dat_Y(size(dat_X))
+    !Output
+    real(real64) :: Y(len)
+    !Internals
+    real(real64), allocatable :: Y1(:)
+    real(real64) :: sc !scale
+    !Logic
+    sc = 2.0_real64
+    Y1 = funcdistr(len, min_val, max_val, dat_X, dat_Y, sc)
+    do while(size(Y1) < len)
+        sc = sc + 1.0_real64
+        Y1 = funcdistr(len, min_val, max_val, dat_X, dat_Y, sc)
+    end do
+    Y = Y1(1:len)
+    return
+end function rejection_sampling
+
     
 end module stat_utils
