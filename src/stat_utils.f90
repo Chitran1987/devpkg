@@ -206,5 +206,19 @@ function rejection_sampling(len, min_val, max_val, dat_X, dat_Y)result(Y)
     return
 end function rejection_sampling
 
-    
+function sample_gauss(len, mu, sig) result(X)
+    !Inputs
+    integer :: len
+    real(real64) :: mu, sig
+    !Outputs
+    real(real64) :: X(len)
+    !Internal
+    real(real64) :: dat_X(10*len), dat_Y(10*len), amp
+    !Logic
+    dat_X = seq(st=-5*sig, en=5*sig, len=10*len)
+    amp = 1/sqrt(2*pi*(sig*sig))
+    dat_Y = gauss_1D(X=dat_X, A=amp, x0=mu, sig=sig)
+    X = rejection_sampling(len=len, min_val=-5*sig, max_val=5*sig, dat_X=dat_X, dat_Y=dat_Y)
+    return
+end function sample_gauss
 end module stat_utils
