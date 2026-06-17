@@ -8,7 +8,7 @@ program test_sample_gauss
     implicit none
     !code
     real(real64) :: X(10000), Y(10000)
-    X = sample_gauss(len=10000, mu=0.0_real64, sig=1.0_real64)
+    X = sample_gauss(len=10000, x0=3.63_real64, sig=1.0_real64)
     Y = X
     call writeXY(X, Y, 'test_sample_gauss')
     
