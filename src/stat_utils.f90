@@ -269,4 +269,58 @@ pure elemental real(real64) function lorentzian(x, A, gamm, x0) result(y)
     return
 end function lorentzian
 
+!function produces a vector sampled from a simple lorentzian distribution
+!Use internally ---> can't control the length of output
+!Length scale terminated to 99% of sampling probability range since lorentians have fat tails i.e. 2nd_moment -> +\infty
+function lorentzdistr_int(len, x0, gamm, scale) result(Y)
+    !Inputs
+    integer :: len
+    real(real64) :: x0, gamm, scale
+    !Output
+    real(real64), allocatable :: Y(:)
+    !Internals
+    real(real64), allocatable :: X1(:)
+    real(real64), allocatable :: Y1(:), lor_Y(:)
+    real(real64) :: min_val, max_val, amp
+    real(real64) :: rat, span_ar
+    logical, allocatable :: mask(:)
+    !!!Real code----------------------------------------------!
+    !Build the first iteration of values
+    min_val = x0 - 63.66_real64*gamm
+    max_val = x0 + 63.66_real64*gamm
+    amp = 1.0_real64
+    !Get an idea of the acceptance area within the rejection block
+    span_ar = 127.32_real64/(pi*gamm) !The spanning area
+    rat = 1.0_real64/span_ar
+    X1 = unidistr(len=ceiling(scale*len/rat), min_val = min_val, max_val = max_val)
+    Y1 = unidistr(len=ceiling(scale*len/rat), min_val=0.0_real64, max_val=amp)
+    lor_Y = lorentzian(x=X1, A=1.0_real64, gamm=gamm, x0=x0)
+    mask = Y1 <= lor_Y
+    Y = pack(X1, mask)
+    return
+end function lorentzdistr_int
+
+!Sample lorentz distribution
+function sample_lorentz(len, x0, gamm) result(X)
+    !Inputs
+    real(real64) :: x0, gamm
+    integer :: len
+    !Outputs
+    real(real64) :: X(len)
+    !Internal
+    real(real64), allocatable :: X1(:)
+    real(real64) :: fact
+    !Logic
+    fact = 30.0_real64 !starting point for factoring
+    X1 = lorentzdistr_int(len=len, x0=x0, gamm=gamm, scale=fact)
+    !X = unidistr(len=len, min_val =0.0_real64, max_val=1.0_real64)
+    do while(size(X1) < len)
+        fact= 10.0*real64
+        X1 = lorentzdistr_int(len=len, x0=x0, gamm=gamm, scale=fact)
+    end do
+    X = X1(1:len)
+    return
+end function sample_lorentz
+
+
 end module stat_utils
