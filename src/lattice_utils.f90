@@ -7,7 +7,7 @@ module lattice_utils
   use plot_utils
   implicit none
   
-  private :: int_search
+  private :: int_search, latt_R_convert
 
 
 contains
