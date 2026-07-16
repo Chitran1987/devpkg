@@ -5,6 +5,8 @@ module stat_utils
     use calculus_utils
     use linalg_solver
     implicit none
+
+    private :: funcdistr, gaussdistr_int, lorentzdistr_int, expdistr_int
     
 contains
 function lin_reg(dat) result(C) 
