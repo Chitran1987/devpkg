@@ -47,7 +47,7 @@ end function int_search
 
 !Private procedure to this module
 !Converts provided lattices R1 and R2 to 1st quadrant R1 and R2 
-!Returns dta in a matrix M
+!Returns data in a matrix M
 !R1 is the 1st column, R2 is the 2nd column
 function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
         !Inputs
