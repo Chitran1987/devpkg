@@ -322,5 +322,71 @@ function sample_lorentz(len, x0, gamm) result(X)
     return
 end function sample_lorentz
 
+!Simple function for exponential distribution
+function exp_distr(X, lambda) result(Y)
+    !Inputs
+    real(real64) :: X(:), lambda
+    !Outputs
+    real(real64) :: Y(size(X))
+    !code
+    if ( any(X < 0.0_real64) ) then
+        error stop "All X has to be greater than zero. Not the Laplace distribution"
+    end if
+    Y = lambda*exp(-lambda*X)
+    return
+end function exp_distr
+
+!function produces a vector sampled from a simple exponential distribution
+!Use internally ---> can't control the length of output
+!Samples only 99.99% of all values
+function expdistr_int(len, lambda, scale) result(Y)
+    !Inputs
+    integer :: len
+    real(real64) :: lambda, scale
+    !Output
+    real(real64), allocatable :: Y(:)
+    !Internals
+    real(real64), allocatable :: X1(:)
+    real(real64), allocatable :: Y1(:), exp_Y(:)
+    real(real64) :: min_val, max_val
+    real(real64) :: rat, span_ar
+    logical, allocatable :: mask(:)
+    !!!Real code----------------------------------------------!
+    !Build the first iteration of values
+    min_val = 0.0_real64
+    max_val = 4.0_real64/lambda
+    !amp = 1.0_real64
+    !Get an idea of the acceptance area within the rejection block
+    span_ar = 4.0_real64 !The spanning area
+    rat = 0.9999_real64/span_ar
+    X1 = unidistr(len=ceiling(scale*len/rat), min_val = min_val, max_val = max_val)
+    Y1 = unidistr(len=ceiling(scale*len/rat), min_val=0.0_real64, max_val=lambda)
+    exp_Y = exp_distr(X=X1, lambda=lambda)
+    mask = Y1 <= exp_Y
+    Y = pack(X1, mask)
+    return
+end function expdistr_int
+
+!Sample exponential distribution
+function sample_exp(len, lambda) result(X)
+    !Inputs
+    real(real64) :: lambda
+    integer :: len
+    !Outputs
+    real(real64) :: X(len)
+    !Internal
+    real(real64), allocatable :: X1(:)
+    real(real64) :: fact
+    !Logic
+    fact = 3.0_real64 !starting point for factoring
+    X1 = expdistr_int(len=len, lambda=lambda, scale=fact)
+    !X = unidistr(len=len, min_val =0.0_real64, max_val=1.0_real64)
+    do while(size(X1) < len)
+        fact= fact+1.0_real64
+        X1 = expdistr_int(len=len, lambda=lambda, scale=fact)
+    end do
+    X = X1(1:len)
+    return
+end function sample_exp
 
 end module stat_utils
