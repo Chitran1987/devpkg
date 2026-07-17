@@ -7,7 +7,7 @@ module lattice_utils
   use plot_utils
   implicit none
   
-  private :: int_search, latt_R_convert
+  !private :: int_search, latt_R_convert
 
 
 contains
@@ -21,9 +21,11 @@ contains
 !Used in functions local to module ---> private 
 function int_search(int_range) result(list_mat)
     integer, intent(in) :: int_range
-    integer :: list_mat((2*int_range+1)**4, 5)
+    integer :: list_mat1((2*int_range+1)**4, 5)
+    integer, allocatable :: list_mat(:,:)
     integer :: m, n, p, q
-    integer :: dumm, cnt
+    integer :: dumm, cnt, len
+    logical :: mask((2*int_range+1)**4)
     !code
     m = int_range
     cnt = 1
@@ -32,16 +34,23 @@ function int_search(int_range) result(list_mat)
             do p = -int_range, int_range
                 do q = -int_range, int_range
                     dumm = m*q - n*p
-                    list_mat(cnt,1) = m
-                    list_mat(cnt, 2) = n
-                    list_mat(cnt, 3) = p
-                    list_mat(cnt, 4) = q
-                    list_mat(cnt, 5) = dumm
+                    list_mat1(cnt,1) = m
+                    list_mat1(cnt, 2) = n
+                    list_mat1(cnt, 3) = p
+                    list_mat1(cnt, 4) = q
+                    list_mat1(cnt, 5) = dumm
                     cnt = cnt+1
                 end do
             end do
         end do
     end do
+    mask = abs(list_mat1(:,5)) == 1
+    len = count(mask)
+    allocate(list_mat(len,4))
+    list_mat(:,1) = pack(list_mat1(:,1), mask)
+    list_mat(:,2) = pack(list_mat1(:,2), mask)
+    list_mat(:,3) = pack(list_mat1(:,3), mask)
+    list_mat(:,4) = pack(list_mat1(:,4), mask)
     return
 end function int_search
 
@@ -57,11 +66,11 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
         real(real64) :: col_R1_R2(2,2)
         !Internals
         real(real64) :: latt_mat(2,2), det_latt
-        real(real64), allocatable :: M1(:,:), M2(:,:) 
+        real(real64), allocatable :: M1(:,:) !M2(:,:) 
         real(real64) :: S1(2), S2(2)
         integer :: m, n, p, q
-        logical, allocatable :: mask(:)
-        integer :: i, mask_true
+        !logical, allocatable :: mask(:)
+        integer :: i !mask_true
         !Error check
         latt_mat(:,1) = R1
         latt_mat(:,2) = R2
@@ -70,19 +79,12 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
             error stop "R1 and R2 are linearly dependent"
         end if
         M1 = int_search(int_range = search_rad)
-        mask = abs(M1(:,5)) == 1
-        mask_true = count(mask)
-        allocate(M2(mask_true, 4))
-        M2(:,1) = pack(M1(:,1), mask)
-        M2(:,2) = pack(M1(:,2), mask)
-        M2(:,3) = pack(M1(:,3), mask)
-        M2(:,4) = pack(M1(:,4), mask)
-        do i = 1, size(M2(:,1))
+        do i = 1, size(M1(:,1))
             !define m, n, p, q
-            m = M2(i,1)
-            n = M2(i,2)
-            p = M2(i,3)
-            q = M2(i,4)
+            m = M1(i,1)
+            n = M1(i,2)
+            p = M1(i,3)
+            q = M1(i,4)
             S1 = m*R1 + n*R2
             S2 = p*R1 + q*R2
             if ( S1(1) >= 0 .and. S1(2) >= 0 .and. S2(1) >= 0 .and. S2(2) >= 0 ) then
@@ -93,7 +95,7 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
                 end if
             end if
         end do
-
+        return
 end function latt_R_convert
 
 !Define a square lattice
