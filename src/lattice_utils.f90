@@ -87,7 +87,7 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
             q = M1(i,4)
             S1 = m*R1 + n*R2
             S2 = p*R1 + q*R2
-            if ( S1(1) >= 0 .and. S1(2) >= 0 .and. S2(1) >= 0 .and. S2(2) >= 0 ) then
+            if ( S1(1) > 0 .and. S1(2) > 0 .and. S2(1) > 0 .and. S2(2) > 0 ) then
                 if ( .not.(S1(1) == 0 .and. S1(2) == 0) .and. .not.(S2(2) ==0 .and. S2(1) == 0)) then
                     col_R1_R2(:,1) = S1
                     col_R1_R2(:,2) = S2
