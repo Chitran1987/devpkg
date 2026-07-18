@@ -198,6 +198,87 @@ function rect_latt_sb(X, Y, R_latt_x, R_latt_y, A, sig) result(tens)
 end function rect_latt_sb
 
 !Define an arbitrary lattice
+function latt(X, Y, R1, R2, A, sig) result(tens)
+    real(real64) :: X(:), Y(:), R1(2), R2(2), A, sig !Inputs
+    real(real64) :: tens(size(Y), size(X), 3) !Outputs
+    !Internal declarations
+    real(real64), allocatable :: X1(:), Y1(:) !Internals
+    real(real64) :: R1_int(2), R2_int(2), lenX, lenY, M(2,2) !Internals
+    real(real64) :: t1, t2 !Tan(\theta) values for R1_int and R2_int !Internals
+    real(real64) :: p(2) !The point from which to start my lattice calculation
+    real(real64) :: distX, distY !The distances from p to (lenX,0) and p to (0, lenY)
+    real(real64) :: dist_R1, dist_R2 !The magnitudes of R1 and R2
+    real(real64), allocatable :: M1(:,:) !The first internal matrix for calculation !Internal
+    real(real64), allocatable :: Mx(:,:), My(:,:) !The matrixes built as a result of subsetting M1
+    logical, allocatable :: mask(:) !The mask
+    real(real64), allocatable :: final_list(:,:) !The final list of co-ordinates which need to populate the image
+    integer :: r, s !M1 === M1(m*n,2)
+    integer :: i,j,k !Loop indexes
+    integer :: cnt !Counter
+    real(real64) :: vec(2) !The iterative vector
+    real(real64) :: gauss_dummy(size(Y), size(X)) !The dummy gauss for iteration
+    !code_0
+    X1 = X - minval(X)
+    Y1 = Y - minval(Y)
+    !Get R1 and R2 into first quadrants
+    M = latt_R_convert(R1, R2, search_rad=5)
+    R1_int = M(:,1)
+    R2_int = M(:,2)
+    !swap R1_int and R2_int if necessary
+    if ( atan(R1_int(2)/R1_int(1)) > atan(R2_int(2)/R2_int(1)) ) then
+        M(:,1) = R2_int
+        M(:,2) = R1_int
+    end if
+    R1 = M(:,1)
+    R2 = M(:,2)
+    !code_1
+    lenX = maxval(X1) - minval(X1)
+    lenY = maxval(Y1) - minval(Y1)
+    t1 = R1(2)/R1(1)
+    t2 = R2(2)/R2(1)
+    p(1) = (lenY + lenX*t1)/(t1-t2)
+    p(2) = (lenY*t1 + lenX*t1*t2)/(t1 - t2)
+    distX = sqrt( sum((p - [lenX, 0.0_real64])*(p - [lenX, 0.0_real64])) )
+    distY = sqrt( sum((p - [0.0_real64, lenY])*(p - [0.0_real64, lenY])) )
+    dist_R1 = sqrt( sum(R1*R1) )
+    dist_R2 = sqrt( sum(R2*R2) )
+    r = ceiling(distX/dist_R1)
+    s = ceiling(distY/dist_R2)
+    allocate(M1((r+1)*(s+1),2))
+    vec = p
+    cnt = 1
+    do i = 0, r
+        do j = 0, s
+            vec = p + i*R1 + j*R2
+            M1(cnt,:) = vec
+            cnt = cnt + 1
+        end do
+    end do
+    !Now, the matrix M1 is succesfully populated
+    mask = ( M1(:,1)>=0.0_real64 ) .and. ( M1(:,1) <= lenX )
+    allocate(Mx(count(mask),2))
+    Mx(:,1) = pack(M1(:,1), mask)
+    Mx(:,2) = pack(M1(:,2), mask)
+    !Now Mx is succesfully populated
+    !redefine the mask
+    mask = (Mx(:,2)>=0.0_real64) .and. (Mx(:,2) <= lenY)
+    allocate(My(count(mask),2))
+    My(:,1) = pack(Mx(:,1), mask)
+    My(:,2) = pack(Mx(:,2), mask)
+    !Now that My is the final list
+    final_list = My
+    !Now create the tensor
+    tens(:,:,2:3) = grid_2(X=X1, Y=Y1)
+    tens(:,:,1) = 0.0_real64
+    do k = 1, size(final_list(:,1))
+        gauss_dummy = gauss_2D_nocorr_core(X=tens(:,:,2), Y=tens(:,:,3), A = A, x0 = final_list(k,1), y0 = final_list(k,2), sig_x = sig, sig_y = sig)
+        tens(:,:,1) = tens(:,:,1) + gauss_dummy
+    end do
+    tens(:,:,2) = tens(:,:,2) + minval(X)
+    tens(:,:,3) = tens(:,:,3) + minval(Y)
+    return
+end function latt
+
 
 !Define a hexagonal lattice
 
