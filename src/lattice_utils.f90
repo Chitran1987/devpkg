@@ -7,7 +7,7 @@ module lattice_utils
   use plot_utils
   implicit none
   
-  private :: int_search
+  private :: int_search, latt_R_convert
 
 
 contains
@@ -97,6 +97,7 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
 end function latt_R_convert
 
 !Define a square lattice
+!single atomic basis(sb)
 function square_latt_sb(X, Y, R_latt, A, sig) result(tens)
   real(real64) :: X(:), Y(:), R_latt !Input
   real(real64) :: A, sig !Gaussian amplitude and sdev
@@ -149,6 +150,7 @@ function square_latt_sb(X, Y, R_latt, A, sig) result(tens)
 end function square_latt_sb
 
 !Define a rectangular lattice
+!single basis(sb)
 function rect_latt_sb(X, Y, R_latt_x, R_latt_y, A, sig) result(tens)
   real(real64) :: X(:), Y(:), R_latt_x, R_latt_y !Input
   real(real64) :: A, sig !Gaussian amplitude and sdev
@@ -279,6 +281,17 @@ end function latt
 
 
 !Define a hexagonal lattice
+!single atomic basis(sb)
+function hex_latt_sb(X, Y, R_latt, A, sig) result(tens)
+    real(real64) :: X(:), Y(:), R_latt, A, sig !Inputs
+    real(real64) :: tens(size(Y), size(X), 3) !Outputs
+    real(real64) :: R1(2), R2(2)
+    !code
+    R1 = [R_latt, 0.0_real64]
+    R2 = [R_latt*cos(pi/3), R_latt*sin(pi/3)]
+    tens = latt(X, Y, R1, R2, A, sig)
+    return
+end function hex_latt_sb
 
 !Define a honeycomb lattice
 
