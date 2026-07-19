@@ -66,7 +66,7 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
         real(real64) :: col_R1_R2(2,2)
         !Internals
         real(real64) :: latt_mat(2,2), det_latt
-        real(real64), allocatable :: M1(:,:) !M2(:,:) 
+        integer, allocatable :: M1(:,:) !M2(:,:)
         real(real64) :: S1(2), S2(2)
         integer :: m, n, p, q
         !logical, allocatable :: mask(:)
@@ -75,7 +75,7 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
         latt_mat(:,1) = R1
         latt_mat(:,2) = R2
         det_latt = latt_mat(1,1)*latt_mat(2,2) - latt_mat(1,2)*latt_mat(2,1)
-        if ( abs(det_latt) <= 10**(-10) ) then
+        if ( abs(det_latt) <= 1.0e-10_real64 ) then
             error stop "R1 and R2 are linearly dependent"
         end if
         M1 = int_search(int_range = search_rad)
@@ -88,14 +88,12 @@ function latt_R_convert(R1, R2, search_rad) result(col_R1_R2)
             S1 = m*R1 + n*R2
             S2 = p*R1 + q*R2
             if ( S1(1) > 0 .and. S1(2) > 0 .and. S2(1) > 0 .and. S2(2) > 0 ) then
-                if ( .not.(S1(1) == 0 .and. S1(2) == 0) .and. .not.(S2(2) ==0 .and. S2(1) == 0)) then
-                    col_R1_R2(:,1) = S1
-                    col_R1_R2(:,2) = S2
-                    return 
-                end if
+                col_R1_R2(:,1) = S1
+                col_R1_R2(:,2) = S2
+                return
             end if
         end do
-        return
+        error stop "No first-quadrant primitive basis found. Increase search_rad or provide a manually reoriented unit cell."
 end function latt_R_convert
 
 !Define a square lattice
