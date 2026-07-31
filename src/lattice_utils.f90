@@ -195,13 +195,14 @@ end function latt_pnt_lst
 !Populate a lattice given The X, Y and lattice point list
 !Returns a 3 dimensional tensor for it
 function populate_latt(X, Y, A, sig, list) result(tens)
-
     real(real64), intent(in) :: X(:), Y(:)
     real(real64), intent(in) :: list(:,:)
     real(real64), intent(in) :: A, sig
 
     real(real64) :: tens(size(Y), size(X), 3)
+
     real(real64) :: gauss_dumm(size(Y), size(X))
+    real(real64) :: pop_sum(size(Y), size(X))
     real(real64) :: Y_local(size(Y))
 
     integer :: i
@@ -210,13 +211,20 @@ function populate_latt(X, Y, A, sig, list) result(tens)
     ! so give it a local copy.
     Y_local = Y
 
+    ! Generate coordinate grids before entering OpenMP.
     tens(:,:,2:3) = grid_2(X, Y_local)
-    tens(:,:,1) = 0.0_real64
 
+    pop_sum = 0.0_real64
+
+    !$omp parallel do default(none) schedule(static)             &
+    !$omp& shared(tens, list, A, sig)                            &
+    !$omp& private(gauss_dumm) reduction(+:pop_sum)
     do i = 1, size(list, 1)
-        gauss_dumm = gauss_2D_nocorr_core( X = tens(:,:,2), Y = tens(:,:,3), A = A, x0 = list(i,1), y0 = list(i,2), sig_x = sig, sig_y = sig)
-        tens(:,:,1) = tens(:,:,1) + gauss_dumm
+        gauss_dumm = gauss_2D_nocorr_core(X=tens(:,:,2), Y=tens(:,:,3), A=A, x0=list(i,1), y0=list(i,2), sig_x=sig, sig_y=sig)
+        pop_sum = pop_sum + gauss_dumm
     end do
+    !$omp end parallel do
+    tens(:,:,1) = pop_sum
     return
 end function populate_latt
 
