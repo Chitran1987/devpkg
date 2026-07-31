@@ -356,6 +356,31 @@ function hex_latt_sb(X, Y, R_latt, A, sig) result(tens)
 end function hex_latt_sb
 
 !Define a honeycomb lattice
+function honeycomb(X, Y, R_latt, A, sig) result(tens)
+    real(real64) :: X(:), Y(:), R_latt, A, sig !Inputs
+    real(real64) :: tens(size(Y), size(X), 3) !Outputs
+    real(real64), allocatable :: lst1(:,:), lst2(:,:), lst_final(:,:) !Internals1
+    real(real64) :: R1(2), R2(2) !Internals
+    integer :: L1, L2 !Internals
+    integer :: i, j !Internals
+    !code
+    R1 = [R_latt, 0.0_real64]
+    R2 = [R_latt*cos(pi/3.0_real64), R_latt*sin(pi/3.0_real64)]
+    lst1 = latt_pnt_lst(X=X, Y=Y, R1 = R1, R2 = R2, shft = [0.0_real64, 0.0_real64]) !1st lattic list
+    lst2 = latt_pnt_lst(X=X, Y=Y, R1 = R1, R2 = R2, shft = [0.0_real64, R_latt/sqrt(3.0_real64)]) !2nd lattice list
+    L1 = size(lst1, 1)
+    L2 = size(lst2, 1)
+    allocate(lst_final(L1+L2, 2))
+    !fill the new list
+    do i = 1, L1
+        lst_final(i,:) = lst1(i,:)
+    end do
+    do j = L1+1, L1+L2
+        lst_final(j,:) = lst2(j-L1,:)
+    end do
+    tens = populate_latt(X=X, Y=Y, A=A, sig=sig, list=lst_final)
+    return
+end function honeycomb
 
 
   
